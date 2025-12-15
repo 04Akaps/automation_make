@@ -1,0 +1,42 @@
+{
+  "name": "newsletters-server",
+  "version": "1.0.0",
+  "description": "Newsletter API Server with Express, TypeScript, MySQL, and Stripe",
+  "main": "dist/server.js",
+  "scripts": {
+    "dev": "nodemon --watch src --exec tsx src/server.ts",
+    "start": "tsx src/server.ts",
+    "build": "tsc",
+    "serve": "node dist/server.js"
+  },
+  "keywords": [
+    "newsletter",
+    "api",
+    "express",
+    "typescript",
+    "mysql",
+    "stripe"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.2",
+    "mysql2": "^3.11.5",
+    "reflect-metadata": "^0.2.2",
+    "stripe": "^17.5.0",
+    "tsyringe": "^4.10.0",
+    "winston": "^3.19.0",
+    "zod": "^4.2.0"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/node": "^22.16.5",
+    "nodemon": "^3.1.7",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.8.3"
+  }
+}
