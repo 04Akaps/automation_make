@@ -20,61 +20,41 @@ export interface NewsletterProps {
 }
 
 export class Newsletter {
-  private constructor(private readonly props: NewsletterProps) {}
+  private constructor(
+    public readonly id: UniqueId,
+    public readonly title: NewsletterTitle,
+    public readonly summary: NewsletterContent | null,
+    public readonly content: NewsletterContent,
+    public readonly status: NewsletterStatus,
+    public readonly publishedAt: PublishedAt,
+    public readonly domain: string | null,
+    public readonly tags: NewsletterTags,
+    public readonly imageUrl: string | null,
+    public readonly createdAt: Date,
+    public readonly updatedAt: Date
+  ) { }
 
   static create(props: NewsletterProps): Newsletter {
-    return new Newsletter(props);
-  }
-
-  get id(): UniqueId {
-    return this.props.id;
-  }
-
-  get title(): NewsletterTitle {
-    return this.props.title;
-  }
-
-  get summary(): NewsletterContent | null {
-    return this.props.summary;
-  }
-
-  get content(): NewsletterContent {
-    return this.props.content;
-  }
-
-  get status(): NewsletterStatus {
-    return this.props.status;
-  }
-
-  get publishedAt(): PublishedAt {
-    return this.props.publishedAt;
-  }
-
-  get domain(): string | null {
-    return this.props.domain;
-  }
-
-  get tags(): NewsletterTags {
-    return this.props.tags;
-  }
-
-  get imageUrl(): string | null {
-    return this.props.imageUrl;
-  }
-
-  get createdAt(): Date {
-    return this.props.createdAt;
-  }
-
-  get updatedAt(): Date {
-    return this.props.updatedAt;
+    return new Newsletter(
+      props.id,
+      props.title,
+      props.summary,
+      props.content,
+      props.status,
+      props.publishedAt,
+      props.domain,
+      props.tags,
+      props.imageUrl,
+      props.createdAt,
+      props.updatedAt
+    );
   }
 
   isPublished(): boolean {
-    return this.props.status.isPublished();
+    return this.status.isPublished();
   }
 
   isInProgress(): boolean {
-    return this.props.status.isProgress();
+    return this.status.isProgress();
   }
 }

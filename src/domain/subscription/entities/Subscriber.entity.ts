@@ -25,54 +25,63 @@ export interface SubscriberProps {
 export class Subscriber {
   private domainEvents: DomainEvent[] = [];
 
-  private constructor(private props: SubscriberProps) {}
+  public readonly id: UniqueId;
+  public readonly email: Email;
+  public readonly name: SubscriberName;
+  public readonly createdAt: Date;
+
+  private _status: SubscriptionStatus;
+  private _stripeCustomerId: StripeCustomerId | null;
+  private _stripeSubscriptionId: StripeSubscriptionId | null;
+  private _subscription: Subscription | null;
+  private _subscribedAt: Date | null;
+  private _cancelledAt: Date | null;
+  private _updatedAt: Date;
+
+  private constructor(props: SubscriberProps) {
+    this.id = props.id;
+    this.email = props.email;
+    this.name = props.name;
+    this.createdAt = props.createdAt;
+    this._status = props.status;
+    this._stripeCustomerId = props.stripeCustomerId;
+    this._stripeSubscriptionId = props.stripeSubscriptionId;
+    this._subscription = props.subscription;
+    this._subscribedAt = props.subscribedAt;
+    this._cancelledAt = props.cancelledAt;
+    this._updatedAt = props.updatedAt;
+  }
 
   static create(props: SubscriberProps): Subscriber {
     return new Subscriber(props);
   }
 
-  get id(): UniqueId {
-    return this.props.id;
-  }
-
-  get email(): Email {
-    return this.props.email;
-  }
-
-  get name(): SubscriberName {
-    return this.props.name;
-  }
-
   get status(): SubscriptionStatus {
-    return this.props.status;
+    return this._status;
   }
 
   get stripeCustomerId(): StripeCustomerId | null {
-    return this.props.stripeCustomerId;
+    return this._stripeCustomerId;
   }
 
   get stripeSubscriptionId(): StripeSubscriptionId | null {
-    return this.props.stripeSubscriptionId;
+    return this._stripeSubscriptionId;
   }
 
   get subscription(): Subscription | null {
-    return this.props.subscription;
+    return this._subscription;
   }
 
   get subscribedAt(): Date | null {
-    return this.props.subscribedAt;
+    return this._subscribedAt;
   }
 
   get cancelledAt(): Date | null {
-    return this.props.cancelledAt;
-  }
-
-  get createdAt(): Date {
-    return this.props.createdAt;
+    return this._cancelledAt;
   }
 
   get updatedAt(): Date {
-    return this.props.updatedAt;
+    return this._updatedAt;
   }
 
   subscribe(
@@ -84,13 +93,13 @@ export class Subscriber {
       throw new DomainError('Subscriber already has an active subscription');
     }
 
-    this.props.stripeCustomerId = customerId;
-    this.props.stripeSubscriptionId = subscriptionId;
-    this.props.subscription = subscription;
-    this.props.status = SubscriptionStatus.active();
-    this.props.subscribedAt = this.props.subscribedAt || new Date();
-    this.props.cancelledAt = null;
-    this.props.updatedAt = new Date();
+    this._stripeCustomerId = customerId;
+    this._stripeSubscriptionId = subscriptionId;
+    this._subscription = subscription;
+    this._status = SubscriptionStatus.active();
+    this._subscribedAt = this._subscribedAt || new Date();
+    this._cancelledAt = null;
+    this._updatedAt = new Date();
   }
 
   cancel(): void {
@@ -98,33 +107,33 @@ export class Subscriber {
       throw new DomainError('No active subscription to cancel');
     }
 
-    if (this.props.subscription) {
-      this.props.subscription.cancel();
+    if (this._subscription) {
+      this._subscription.cancel();
     }
 
-    this.props.status = SubscriptionStatus.cancelled();
-    this.props.cancelledAt = new Date();
-    this.props.updatedAt = new Date();
+    this._status = SubscriptionStatus.cancelled();
+    this._cancelledAt = new Date();
+    this._updatedAt = new Date();
   }
 
   reactivate(subscriptionId: StripeSubscriptionId, subscription: Subscription): void {
-    if (!this.props.stripeCustomerId) {
+    if (!this._stripeCustomerId) {
       throw new DomainError('Cannot reactivate subscriber without Stripe customer ID');
     }
 
-    this.props.stripeSubscriptionId = subscriptionId;
-    this.props.subscription = subscription;
-    this.props.status = SubscriptionStatus.active();
-    this.props.cancelledAt = null;
-    this.props.updatedAt = new Date();
+    this._stripeSubscriptionId = subscriptionId;
+    this._subscription = subscription;
+    this._status = SubscriptionStatus.active();
+    this._cancelledAt = null;
+    this._updatedAt = new Date();
   }
 
   isActive(): boolean {
-    return this.props.status.isActive();
+    return this._status.isActive();
   }
 
   isCancelled(): boolean {
-    return this.props.status.isCancelled();
+    return this._status.isCancelled();
   }
 
   addDomainEvent(event: DomainEvent): void {

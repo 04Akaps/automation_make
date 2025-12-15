@@ -9,22 +9,22 @@ export interface SubscriptionProps {
 }
 
 export class Subscription {
-  private constructor(private props: SubscriptionProps) {}
+  public readonly stripeSubscriptionId: StripeSubscriptionId;
+  public readonly period: SubscriptionPeriod;
+  private _cancelledAt: Date | null;
+
+  private constructor(props: SubscriptionProps) {
+    this.stripeSubscriptionId = props.stripeSubscriptionId;
+    this.period = props.period;
+    this._cancelledAt = props.cancelledAt;
+  }
 
   static create(props: SubscriptionProps): Subscription {
     return new Subscription(props);
   }
 
-  get stripeSubscriptionId(): StripeSubscriptionId {
-    return this.props.stripeSubscriptionId;
-  }
-
-  get period(): SubscriptionPeriod {
-    return this.props.period;
-  }
-
   get cancelledAt(): Date | null {
-    return this.props.cancelledAt;
+    return this._cancelledAt;
   }
 
   cancel(): void {
@@ -32,14 +32,14 @@ export class Subscription {
       throw new ValidationError('Subscription is already cancelled');
     }
 
-    this.props.cancelledAt = new Date();
+    this._cancelledAt = new Date();
   }
 
   isCancelled(): boolean {
-    return this.props.cancelledAt !== null;
+    return this._cancelledAt !== null;
   }
 
   isActive(): boolean {
-    return !this.isCancelled() && this.props.period.isActive();
+    return !this.isCancelled() && this.period.isActive();
   }
 }
