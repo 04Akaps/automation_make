@@ -9,6 +9,7 @@ export class NewsletterMapper {
       summary: entity.summary ? entity.summary.getValue() : null,
       content: entity.content.getValue(),
       status: entity.status.getValue(),
+      serviceName: entity.serviceName.getValue(),
       publishedAt: entity.publishedAt.toISOString(),
       domain: entity.domain,
       tags: entity.tags.getValue(),

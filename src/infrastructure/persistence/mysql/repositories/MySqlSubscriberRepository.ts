@@ -12,7 +12,7 @@ import { SubscriberRow } from '../types/SubscriberRow';
 export class MySqlSubscriberRepository implements ISubscriberRepository {
   constructor(
     @inject(DatabaseConnection) private db: DatabaseConnection
-  ) {}
+  ) { }
 
   async findById(id: UniqueId): Promise<Subscriber | null> {
     const rows = await this.db.query<SubscriberRow[]>(

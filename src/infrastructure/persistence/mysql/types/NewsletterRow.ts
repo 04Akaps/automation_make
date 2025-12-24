@@ -6,6 +6,7 @@ export interface NewsletterRow extends RowDataPacket {
   summary: string | null;
   content: string;
   status: 'progress' | 'published';
+  service_name: string;
   published_at: Date | null;
   domain: string | null;
   tags: string | null;

@@ -1,6 +1,7 @@
 export interface GetNewslettersInputDto {
   cursor?: string;
   limit?: number;
+  serviceName?: string;
 }
 
 export interface NewsletterDto {
@@ -18,6 +19,7 @@ export interface NewsletterDto {
     ko?: string;
   };
   status: string;
+  serviceName: string;
   publishedAt: string | null;
   domain: string | null;
   tags: string[];

@@ -1,6 +1,7 @@
 export const DI_TOKENS = {
   NEWSLETTER_REPOSITORY: 'INewsletterRepository',
   SUBSCRIBER_REPOSITORY: 'ISubscriberRepository',
+  FEATURE_FLAG_REPOSITORY: 'IFeatureFlagRepository',
   PAYMENT_SERVICE: 'IPaymentService',
   EVENT_DISPATCHER: 'IEventDispatcher',
   LOGGER: 'Logger',

@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS newsletters (
   summary JSON,
   content JSON NOT NULL,
   status ENUM('progress', 'published') NOT NULL DEFAULT 'progress',
+  service_name VARCHAR(100) NOT NULL,
   published_at DATETIME NULL,
   domain VARCHAR(255),
   tags JSON,
@@ -17,7 +18,8 @@ CREATE TABLE IF NOT EXISTS newsletters (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   INDEX idx_status (status),
-  INDEX idx_published_at (published_at)
+  INDEX idx_published_at (published_at),
+  INDEX idx_service_name (service_name)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS subscribers (
@@ -35,4 +37,22 @@ CREATE TABLE IF NOT EXISTS subscribers (
   INDEX idx_status (status),
   INDEX idx_stripe_customer_id (stripe_customer_id),
   INDEX idx_subscribed_at (subscribed_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+------------------------------------
+
+CREATE DATABASE IF NOT EXISTS management_db
+  CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci;
+
+USE management_db;
+
+CREATE TABLE IF NOT EXISTS feature_flags (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  service_name VARCHAR(100) NOT NULL UNIQUE,
+  is_maintenance TINYINT(1) DEFAULT 0,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_service_name (service_name)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

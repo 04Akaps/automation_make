@@ -5,6 +5,7 @@ import { NewsletterContent } from '../../../../domain/newsletter/value-objects/N
 import { NewsletterStatus } from '../../../../domain/newsletter/value-objects/NewsletterStatus.vo';
 import { PublishedAt } from '../../../../domain/newsletter/value-objects/PublishedAt.vo';
 import { NewsletterTags } from '../../../../domain/newsletter/value-objects/NewsletterTags.vo';
+import { ServiceName } from '../../../../domain/feature-flag/value-objects/ServiceName.vo';
 import { NewsletterRow } from '../types/NewsletterRow';
 
 export class NewsletterPersistenceMapper {
@@ -20,6 +21,7 @@ export class NewsletterPersistenceMapper {
       summary: summaryData ? NewsletterContent.create(summaryData) : null,
       content: NewsletterContent.create(contentData),
       status: NewsletterStatus.create(row.status),
+      serviceName: ServiceName.create(row.service_name),
       publishedAt: PublishedAt.create(row.published_at),
       domain: row.domain,
       tags: NewsletterTags.create(tagsData),
@@ -38,6 +40,7 @@ export class NewsletterPersistenceMapper {
       summary: entity.summary ? JSON.stringify(entity.summary.getValue()) : null,
       content: JSON.stringify(entity.content.getValue()),
       status: entity.status.getValue(),
+      service_name: entity.serviceName.getValue(),
       published_at: entity.publishedAt.getValue(),
       domain: entity.domain,
       tags: entity.tags.isEmpty() ? null : JSON.stringify(entity.tags.getValue()),
