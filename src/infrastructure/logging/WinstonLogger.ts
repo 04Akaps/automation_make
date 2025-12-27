@@ -107,10 +107,6 @@ export class WinstonLogger {
     });
   }
 
-  warn(location: string, message: string): void {
-    this.logger.warn({ location, message });
-  }
-
   debug(location: string, message: string): void {
     if (process.env.NODE_ENV === 'development') {
       this.logger.debug({ location, message });

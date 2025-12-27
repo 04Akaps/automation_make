@@ -70,11 +70,6 @@ CREATE TABLE IF NOT EXISTS newsletter_deliveries (
   FOREIGN KEY (subscriber_id) REFERENCES subscribers(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-
-
-
-------------------------------------
-
 CREATE DATABASE IF NOT EXISTS management_db
   CHARACTER SET utf8mb4
   COLLATE utf8mb4_unicode_ci;

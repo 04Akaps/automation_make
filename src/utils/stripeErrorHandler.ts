@@ -62,19 +62,3 @@ export function handleStripeError(error: any): StripeErrorInfo {
   };
 }
 
-export function isErrorType(error: any, type: StripeErrorType): boolean {
-  return error?.type === type;
-}
-
-export function isCardError(error: any): boolean {
-  return isErrorType(error, StripeErrorType.CARD_ERROR);
-}
-
-export function isInvalidRequestError(error: any): boolean {
-  return isErrorType(error, StripeErrorType.INVALID_REQUEST);
-}
-
-export function isAPIError(error: any): boolean {
-  return isErrorType(error, StripeErrorType.API_ERROR);
-}
-

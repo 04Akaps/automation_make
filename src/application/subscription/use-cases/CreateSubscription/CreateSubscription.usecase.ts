@@ -11,7 +11,6 @@ import { Subscription } from '../../../../domain/subscription/entities/Subscript
 import { Subscriber } from '../../../../domain/subscription/entities/Subscriber.entity';
 import { SubscriptionPeriod } from '../../../../domain/subscription/value-objects/SubscriptionPeriod.vo';
 import { UniqueId } from '../../../../domain/shared/value-objects/UniqueId.vo';
-import { SubscriptionActivated } from '../../../../domain/subscription/events/SubscriptionActivated.event';
 import { SubscriberCreated } from '../../../../domain/subscription/events/SubscriberCreated.event';
 import { CreateSubscriptionInputDto, CreateSubscriptionOutputDto } from './CreateSubscription.dto';
 
@@ -76,15 +75,6 @@ export class CreateSubscriptionUseCase {
       );
 
       await this.subscriberRepo.save(subscriber);
-
-      subscriber.addDomainEvent(
-        new SubscriptionActivated(subscriber.id.toString(), {
-          subscriberId: subscriber.id.toString(),
-          email: subscriber.email.getValue(),
-          stripeCustomerId: paymentResult.customerId,
-          stripeSubscriptionId: paymentResult.subscriptionId,
-        })
-      );
     }
 
     const events = subscriber.getDomainEvents();
