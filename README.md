@@ -30,6 +30,8 @@ Make.com : 특정 업무 자동화를 위해 사용
     -> Stripe WebHook 처리 완료
 [ O ] MVC -> 헥사고날 아키텍처로 변경 완료
 [ O ] 피처 플래그 도입
+[ O ] 로그 정리
+[ O ] SMTP Skelton 적용
 ```
 
 
