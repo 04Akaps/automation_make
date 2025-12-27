@@ -1,10 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
+import winston from 'winston';
 import { container } from 'tsyringe';
 import { DI_TOKENS } from '../../../di/tokens';
 import { IFeatureFlagRepository } from '../../../domain/feature-flag/repositories/IFeatureFlagRepository.interface';
 import { ServiceName } from '../../../domain/feature-flag/value-objects/ServiceName.vo';
 
 const SERVICE_NAME = 'crypto_letters';
+const logger = container.resolve<winston.Logger>(DI_TOKENS.LOGGER);
 
 export const maintenanceMiddleware = async (
   req: Request,
@@ -32,9 +34,11 @@ export const maintenanceMiddleware = async (
 
     next();
   } catch (error) {
-    // If feature flag check fails, allow the request to proceed
-    // This prevents the feature flag system from blocking all requests in case of errors
-    console.error('Feature flag check failed:', error);
+    logger.error({
+      location: 'MaintenanceMiddleware',
+      code: 'FEATURE_FLAG_CHECK_FAILED',
+      message: error instanceof Error ? error.message : String(error)
+    } as any);
     next();
   }
 };

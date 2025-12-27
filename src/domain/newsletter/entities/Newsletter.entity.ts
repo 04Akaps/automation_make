@@ -4,7 +4,6 @@ import { NewsletterContent } from '../value-objects/NewsletterContent.vo';
 import { NewsletterStatus } from '../value-objects/NewsletterStatus.vo';
 import { PublishedAt } from '../value-objects/PublishedAt.vo';
 import { NewsletterTags } from '../value-objects/NewsletterTags.vo';
-import { ServiceName } from '../../feature-flag/value-objects/ServiceName.vo';
 
 export interface NewsletterProps {
   id: UniqueId;
@@ -12,7 +11,6 @@ export interface NewsletterProps {
   summary: NewsletterContent | null;
   content: NewsletterContent;
   status: NewsletterStatus;
-  serviceName: ServiceName;
   publishedAt: PublishedAt;
   domain: string | null;
   tags: NewsletterTags;
@@ -28,7 +26,6 @@ export class Newsletter {
     public readonly summary: NewsletterContent | null,
     public readonly content: NewsletterContent,
     public readonly status: NewsletterStatus,
-    public readonly serviceName: ServiceName,
     public readonly publishedAt: PublishedAt,
     public readonly domain: string | null,
     public readonly tags: NewsletterTags,
@@ -44,7 +41,6 @@ export class Newsletter {
       props.summary,
       props.content,
       props.status,
-      props.serviceName,
       props.publishedAt,
       props.domain,
       props.tags,

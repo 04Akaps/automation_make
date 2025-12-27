@@ -21,7 +21,6 @@ export class NewsletterController {
       const result = await this.getNewslettersUseCase.execute({
         cursor: validated.cursor,
         limit: validated.limit,
-        serviceName: validated.serviceName,
       });
 
       res.json(ApiResponse.success(result, 'Newsletters fetched successfully').toJSON());

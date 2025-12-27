@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import express from 'express';
+import winston from 'winston';
 import { container } from '../../../di/container';
 import { DI_TOKENS } from '../../../di/tokens';
 import { IPaymentService } from '../../../application/subscription/ports/IPaymentService.interface';
@@ -13,6 +13,7 @@ import { Subscriber } from '../../../domain/subscription/entities/Subscriber.ent
 import { UniqueId } from '../../../domain/shared/value-objects/UniqueId.vo';
 
 const router = Router();
+const logger = container.resolve<winston.Logger>(DI_TOKENS.LOGGER);
 
 router.post('/stripe', async (req: Request, res: Response) => {
   const sig = req.headers['stripe-signature'] as string;
@@ -25,7 +26,13 @@ router.post('/stripe', async (req: Request, res: Response) => {
     switch (event.type) {
       case 'checkout.session.completed': {
         const session = event.data.object;
-        console.log(`[WEBHOOK] Checkout completed | session: ${session.id} | email: ${session.customer_email}`);
+        logger.info({
+          location: 'WebhookRoute',
+          event: 'checkout.session.completed',
+          sessionId: session.id,
+          email: session.customer_email,
+          message: 'Checkout completed'
+        } as any);
 
         if (session.subscription && session.customer_email) {
           const email = Email.create(session.customer_email);
@@ -37,7 +44,12 @@ router.post('/stripe', async (req: Request, res: Response) => {
               null as any
             );
             await subscriberRepo.save(existingSubscriber);
-            console.log(`[WEBHOOK] Subscriber reactivated | email: ${session.customer_email}`);
+            logger.info({
+              location: 'WebhookRoute',
+              event: 'subscriber_reactivated',
+              email: session.customer_email,
+              message: 'Subscriber reactivated'
+            } as any);
           } else {
             const newSubscriber = Subscriber.create({
               id: UniqueId.create(0),
@@ -54,7 +66,12 @@ router.post('/stripe', async (req: Request, res: Response) => {
             });
 
             await subscriberRepo.create(newSubscriber);
-            console.log(`[WEBHOOK] New subscriber created | email: ${session.customer_email}`);
+            logger.info({
+              location: 'WebhookRoute',
+              event: 'subscriber_created',
+              email: session.customer_email,
+              message: 'New subscriber created'
+            } as any);
           }
         }
         break;
@@ -69,7 +86,12 @@ router.post('/stripe', async (req: Request, res: Response) => {
         if (subscriber) {
           subscriber.cancel();
           await subscriberRepo.save(subscriber);
-          console.log(`[WEBHOOK] Subscription cancelled | email: ${subscriber.email.getValue()}`);
+          logger.info({
+            location: 'WebhookRoute',
+            event: 'subscription_cancelled',
+            email: subscriber.email.getValue(),
+            message: 'Subscription cancelled'
+          } as any);
         }
         break;
       }
@@ -88,12 +110,22 @@ router.post('/stripe', async (req: Request, res: Response) => {
                 null as any
               );
               await subscriberRepo.save(subscriber);
-              console.log(`[WEBHOOK] Subscription reactivated | email: ${subscriber.email.getValue()}`);
+              logger.info({
+                location: 'WebhookRoute',
+                event: 'subscription_reactivated',
+                email: subscriber.email.getValue(),
+                message: 'Subscription reactivated'
+              } as any);
             }
           } else if (subscription.status === 'canceled') {
             subscriber.cancel();
             await subscriberRepo.save(subscriber);
-            console.log(`[WEBHOOK] Subscription synced to cancelled | email: ${subscriber.email.getValue()}`);
+            logger.info({
+              location: 'WebhookRoute',
+              event: 'subscription_synced_cancelled',
+              email: subscriber.email.getValue(),
+              message: 'Subscription synced to cancelled'
+            } as any);
           }
         }
         break;
@@ -101,7 +133,13 @@ router.post('/stripe', async (req: Request, res: Response) => {
 
       case 'invoice.payment_failed': {
         const invoice = event.data.object;
-        console.error(`[WEBHOOK] Payment failed | invoice: ${invoice.id}`);
+        logger.error({
+          location: 'WebhookRoute',
+          event: 'invoice.payment_failed',
+          invoiceId: invoice.id,
+          code: 'PAYMENT_FAILED',
+          message: `Payment failed for invoice ${invoice.id}`
+        } as any);
         break;
       }
 
@@ -111,7 +149,11 @@ router.post('/stripe', async (req: Request, res: Response) => {
 
     res.json({ received: true });
   } catch (err: any) {
-    console.error('Webhook processing error:', err);
+    logger.error({
+      location: 'WebhookRoute',
+      code: 'WEBHOOK_ERROR',
+      message: err instanceof Error ? err.message : String(err)
+    } as any);
     res.status(400).send(`Webhook Error: ${err.message}`);
   }
 });

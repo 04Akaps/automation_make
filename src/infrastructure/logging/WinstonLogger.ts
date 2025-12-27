@@ -6,37 +6,76 @@ export class WinstonLogger {
   private logger: winston.Logger;
 
   constructor() {
-    const customFormat = winston.format.printf(({ level, message, timestamp, location, code }) => {
-      const levelUpper = level.toUpperCase();
+    const customFormat = winston.format.printf((info) => {
+      const { level, message, timestamp, location, code, ...rest } = info;
       const parts: string[] = [];
 
-      parts.push(`[${levelUpper}]`);
+      parts.push(String(timestamp));
 
       if (location) {
-        parts.push(`location: ${location}`);
+        parts.push(`[${location}]`);
+      }
+
+      const additionalFields = Object.keys(rest)
+        .filter(key => !['level', 'message', 'timestamp', 'location', 'code', 'splat', Symbol.for('level'), Symbol.for('splat')].includes(key))
+        .map(key => `${key}=${JSON.stringify(rest[key])}`)
+        .join(' ');
+
+      if (additionalFields) {
+        parts.push(additionalFields);
+      }
+
+      if (message) {
+        parts.push(String(message));
       }
 
       if (code) {
-        parts.push(`code: "${code}"`);
+        parts.push(`[${code}]`);
       }
 
-      parts.push(`message: ${message}`);
-
-      return `${timestamp} ${parts.join(' | ')}`;
+      return parts.join(' ');
     });
 
     this.logger = winston.createLogger({
       level: process.env.NODE_ENV === 'development' ? 'debug' : 'info',
       format: winston.format.combine(
         winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-        winston.format.errors({ stack: true }),
-        customFormat
+        winston.format.errors({ stack: true })
       ),
       transports: [
         new winston.transports.Console({
           format: winston.format.combine(
-            winston.format.colorize(),
-            customFormat
+            winston.format.colorize({ all: true }),
+            winston.format.printf((info) => {
+              const { level, message, timestamp, location, code, ...rest } = info;
+              const parts: string[] = [];
+
+              parts.push(level);
+              parts.push(String(timestamp));
+
+              if (location) {
+                parts.push(`[${location}]`);
+              }
+
+              const additionalFields = Object.keys(rest)
+                .filter(key => !['level', 'message', 'timestamp', 'location', 'code', 'splat', Symbol.for('level'), Symbol.for('splat')].includes(key))
+                .map(key => `${key}=${JSON.stringify(rest[key])}`)
+                .join(' ');
+
+              if (additionalFields) {
+                parts.push(additionalFields);
+              }
+
+              if (message) {
+                parts.push(String(message));
+              }
+
+              if (code) {
+                parts.push(`[${code}]`);
+              }
+
+              return parts.join(' ');
+            })
           ),
         }),
       ],

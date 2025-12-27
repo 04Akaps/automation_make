@@ -5,7 +5,10 @@ import { ManagementDatabaseConnection } from '../../infrastructure/persistence/m
 import { MySqlNewsletterRepository } from '../../infrastructure/persistence/mysql/repositories/MySqlNewsletterRepository';
 import { MySqlSubscriberRepository } from '../../infrastructure/persistence/mysql/repositories/MySqlSubscriberRepository';
 import { MySqlFeatureFlagRepository } from '../../infrastructure/persistence/mysql/repositories/MySqlFeatureFlagRepository';
+import { MySqlRealtimeNewsletterRepository } from '../../infrastructure/persistence/mysql/repositories/MySqlRealtimeNewsletterRepository';
+import { MySqlNewsletterDeliveryRepository } from '../../infrastructure/persistence/mysql/repositories/MySqlNewsletterDeliveryRepository';
 import { StripePaymentService } from '../../infrastructure/payment/stripe/StripePaymentService';
+import { NodemailerEmailService } from '../../infrastructure/email/NodemailerEmailService';
 import { InMemoryEventDispatcher } from '../../infrastructure/events/InMemoryEventDispatcher';
 import { WinstonLogger } from '../../infrastructure/logging/WinstonLogger';
 
@@ -25,8 +28,20 @@ export function registerInfrastructure(container: DependencyContainer): void {
     useClass: MySqlFeatureFlagRepository,
   });
 
+  container.register(DI_TOKENS.REALTIME_NEWSLETTER_REPOSITORY, {
+    useClass: MySqlRealtimeNewsletterRepository,
+  });
+
+  container.register(DI_TOKENS.NEWSLETTER_DELIVERY_REPOSITORY, {
+    useClass: MySqlNewsletterDeliveryRepository,
+  });
+
   container.register(DI_TOKENS.PAYMENT_SERVICE, {
     useClass: StripePaymentService,
+  });
+
+  container.register(DI_TOKENS.EMAIL_SERVICE, {
+    useClass: NodemailerEmailService,
   });
 
   container.registerSingleton(DI_TOKENS.EVENT_DISPATCHER, InMemoryEventDispatcher);

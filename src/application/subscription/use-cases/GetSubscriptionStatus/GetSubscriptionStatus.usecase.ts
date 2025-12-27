@@ -1,4 +1,5 @@
 import { injectable, inject } from 'tsyringe';
+import winston from 'winston';
 import { ISubscriberRepository } from '../../../../domain/subscription/repositories/ISubscriberRepository.interface';
 import { IPaymentService } from '../../ports/IPaymentService.interface';
 import { Email } from '../../../../domain/subscription/value-objects/Email.vo';
@@ -9,7 +10,8 @@ import { SubscriberMapper } from '../../mappers/SubscriberMapper';
 export class GetSubscriptionStatusUseCase {
   constructor(
     @inject('ISubscriberRepository') private subscriberRepo: ISubscriberRepository,
-    @inject('IPaymentService') private paymentService: IPaymentService
+    @inject('IPaymentService') private paymentService: IPaymentService,
+    @inject('Logger') private logger: winston.Logger
   ) {}
 
   async execute(input: GetSubscriptionStatusInputDto): Promise<GetSubscriptionStatusOutputDto | null> {
@@ -30,7 +32,11 @@ export class GetSubscriptionStatusUseCase {
 
         dto.currentPeriodEnd = new Date(subscription.currentPeriodEnd * 1000).toISOString();
       } catch (error) {
-        console.error('Error fetching subscription from Stripe:', error);
+        this.logger.error({
+          location: 'GetSubscriptionStatusUseCase',
+          code: 'STRIPE_FETCH_ERROR',
+          message: error instanceof Error ? error.message : String(error)
+        } as any);
       }
     }
 

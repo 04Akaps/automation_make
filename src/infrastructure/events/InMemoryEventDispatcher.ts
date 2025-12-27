@@ -1,10 +1,13 @@
-import { singleton } from 'tsyringe';
+import { singleton, inject } from 'tsyringe';
+import winston from 'winston';
 import { DomainEvent } from '../../domain/shared/events/DomainEvent.interface';
 import { IEventDispatcher, EventHandler } from '../../domain/shared/events/IEventDispatcher.interface';
 
 @singleton()
 export class InMemoryEventDispatcher implements IEventDispatcher {
   private handlers: Map<string, EventHandler[]> = new Map();
+
+  constructor(@inject('Logger') private logger: winston.Logger) {}
 
   async dispatch(event: DomainEvent): Promise<void> {
     const handlers = this.handlers.get(event.eventName) || [];
@@ -13,7 +16,12 @@ export class InMemoryEventDispatcher implements IEventDispatcher {
       try {
         await handler.handle(event);
       } catch (error) {
-        console.error(`Error handling event ${event.eventName}:`, error);
+        this.logger.error({
+          location: 'InMemoryEventDispatcher',
+          eventName: event.eventName,
+          code: 'EVENT_HANDLER_ERROR',
+          message: error instanceof Error ? error.message : String(error)
+        } as any);
       }
     }
   }

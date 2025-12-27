@@ -1,35 +1,14 @@
-/**
- * Stripe 에러 타입 정의
- */
 export enum StripeErrorType {
-  // 카드 에러
   CARD_ERROR = 'StripeCardError',
-  
-  // 잘못된 요청
   INVALID_REQUEST = 'StripeInvalidRequestError',
-  
-  // API 에러
   API_ERROR = 'StripeAPIError',
-  
-  // 연결 에러
   CONNECTION_ERROR = 'StripeConnectionError',
-  
-  // 인증 에러
   AUTHENTICATION_ERROR = 'StripeAuthenticationError',
-  
-  // Rate Limit 에러
   RATE_LIMIT_ERROR = 'StripeRateLimitError',
-  
-  // 권한 에러
   PERMISSION_ERROR = 'StripePermissionError',
-  
-  // Idempotency 에러
   IDEMPOTENCY_ERROR = 'StripeIdempotencyError',
 }
 
-/**
- * 에러 타입별 HTTP 상태 코드 매핑
- */
 export const ErrorStatusCodeMap: Record<StripeErrorType, number> = {
   [StripeErrorType.CARD_ERROR]: 402,
   [StripeErrorType.INVALID_REQUEST]: 400,
@@ -41,9 +20,6 @@ export const ErrorStatusCodeMap: Record<StripeErrorType, number> = {
   [StripeErrorType.IDEMPOTENCY_ERROR]: 400,
 };
 
-/**
- * 에러 타입별 사용자 친화적 메시지
- */
 export const ErrorMessageMap: Record<StripeErrorType, string> = {
   [StripeErrorType.CARD_ERROR]: 'Card payment failed',
   [StripeErrorType.INVALID_REQUEST]: 'Invalid request',
@@ -55,9 +31,6 @@ export const ErrorMessageMap: Record<StripeErrorType, string> = {
   [StripeErrorType.IDEMPOTENCY_ERROR]: 'Duplicate request',
 };
 
-/**
- * Stripe 에러 정보
- */
 export interface StripeErrorInfo {
   statusCode: number;
   errorMessage: string;
@@ -65,18 +38,11 @@ export interface StripeErrorInfo {
   errorType: StripeErrorType | null;
 }
 
-/**
- * Stripe 에러 타입 확인
- */
 export function isStripeError(error: any): boolean {
   return error?.type && Object.values(StripeErrorType).includes(error.type);
 }
 
-/**
- * Stripe 에러 처리 헬퍼
- */
 export function handleStripeError(error: any): StripeErrorInfo {
-  // Stripe 에러인 경우
   if (isStripeError(error)) {
     const errorType = error.type as StripeErrorType;
     
@@ -87,8 +53,7 @@ export function handleStripeError(error: any): StripeErrorInfo {
       errorType,
     };
   }
-  
-  // 일반 에러인 경우
+
   return {
     statusCode: 500,
     errorMessage: 'Internal server error',
@@ -97,30 +62,18 @@ export function handleStripeError(error: any): StripeErrorInfo {
   };
 }
 
-/**
- * 특정 에러 타입인지 확인
- */
 export function isErrorType(error: any, type: StripeErrorType): boolean {
   return error?.type === type;
 }
 
-/**
- * 카드 에러인지 확인
- */
 export function isCardError(error: any): boolean {
   return isErrorType(error, StripeErrorType.CARD_ERROR);
 }
 
-/**
- * 잘못된 요청 에러인지 확인
- */
 export function isInvalidRequestError(error: any): boolean {
   return isErrorType(error, StripeErrorType.INVALID_REQUEST);
 }
 
-/**
- * API 에러인지 확인
- */
 export function isAPIError(error: any): boolean {
   return isErrorType(error, StripeErrorType.API_ERROR);
 }

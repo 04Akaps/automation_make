@@ -1,14 +1,23 @@
 import { Request, Response, NextFunction } from 'express';
+import winston from 'winston';
 import { DomainError } from '../../../domain/shared/errors/DomainError';
 import { ValidationError } from '../../../domain/shared/errors/ValidationError';
 import { NotFoundError } from '../../../domain/shared/errors/NotFoundError';
 import { ApiResponse } from '../../../application/shared/dtos/ApiResponse.dto';
 import { handleStripeError } from '../../../utils/stripeErrorHandler';
-import { ZodError } from 'zod';
+import { container } from '../../../di/container';
+import { DI_TOKENS } from '../../../di/tokens';
 
 export class ErrorMiddleware {
   static handle(err: any, req: Request, res: Response, next: NextFunction): void {
-    console.error('Error:', err);
+    const logger = container.resolve<winston.Logger>(DI_TOKENS.LOGGER);
+    logger.error({
+      location: 'ErrorMiddleware',
+      method: req.method,
+      path: req.path,
+      code: 'REQUEST_ERROR',
+      message: err instanceof Error ? err.message : String(err)
+    } as any);
 
     if (err.name === 'ZodError' && err.issues) {
       const errorMessage = err.issues.map((e: any) => `${e.path.join('.')}: ${e.message}`).join(', ');

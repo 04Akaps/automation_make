@@ -2,7 +2,6 @@ import { injectable, inject } from 'tsyringe';
 import { INewsletterRepository, PaginatedResult } from '../../../../domain/newsletter/repositories/INewsletterRepository.interface';
 import { Newsletter } from '../../../../domain/newsletter/entities/Newsletter.entity';
 import { UniqueId } from '../../../../domain/shared/value-objects/UniqueId.vo';
-import { ServiceName } from '../../../../domain/feature-flag/value-objects/ServiceName.vo';
 import { DatabaseConnection } from '../connection/DatabaseConnection';
 import { NewsletterPersistenceMapper } from '../mappers/NewsletterPersistenceMapper';
 import { NewsletterRow } from '../types/NewsletterRow';
@@ -26,14 +25,9 @@ export class MySqlNewsletterRepository implements INewsletterRepository {
     return NewsletterPersistenceMapper.toDomain(rows[0]);
   }
 
-  async findAll(cursor?: string, limit: number = 10, serviceName?: ServiceName): Promise<PaginatedResult<Newsletter>> {
+  async findAll(cursor?: string, limit: number = 10): Promise<PaginatedResult<Newsletter>> {
     let query = 'SELECT * FROM newsletters WHERE status = ? ';
     const params: any[] = ['published'];
-
-    if (serviceName) {
-      query += 'AND service_name = ? ';
-      params.push(serviceName.getValue());
-    }
 
     if (cursor) {
       query += 'AND id < ? ';

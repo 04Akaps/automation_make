@@ -7,6 +7,7 @@ import { GetSubscriptionStatusUseCase } from '../../application/subscription/use
 import { CancelSubscriptionUseCase } from '../../application/subscription/use-cases/CancelSubscription/CancelSubscription.usecase';
 import { CreateCheckoutSessionUseCase } from '../../application/subscription/use-cases/CreateCheckoutSession/CreateCheckoutSession.usecase';
 import { GetPriceInfoUseCase } from '../../application/subscription/use-cases/GetPriceInfo/GetPriceInfo.usecase';
+import { ProcessRealtimeNewslettersUseCase } from '../../application/realtime-newsletter/use-cases/ProcessRealtimeNewsletters/ProcessRealtimeNewsletters.usecase';
 
 export function registerApplication(container: DependencyContainer): void {
   container.register(DI_TOKENS.GET_NEWSLETTERS_USE_CASE, {
@@ -35,5 +36,9 @@ export function registerApplication(container: DependencyContainer): void {
 
   container.register(DI_TOKENS.GET_PRICE_INFO_USE_CASE, {
     useClass: GetPriceInfoUseCase,
+  });
+
+  container.register(DI_TOKENS.PROCESS_REALTIME_NEWSLETTERS_USE_CASE, {
+    useClass: ProcessRealtimeNewslettersUseCase,
   });
 }

@@ -7,7 +7,9 @@
     "dev": "nodemon --watch src --exec tsx src/server.ts",
     "start": "tsx src/server.ts",
     "build": "tsc",
-    "serve": "node dist/server.js"
+    "serve": "node dist/server.js",
+    "batch:newsletter": "tsx src/batch/newsletter-batch.ts",
+    "batch:newsletter:daemon": "tsx src/batch/newsletter-batch.ts --daemon"
   },
   "keywords": [
     "newsletter",
@@ -24,6 +26,8 @@
     "dotenv": "^16.4.5",
     "express": "^4.21.2",
     "mysql2": "^3.11.5",
+    "node-cron": "^3.0.3",
+    "nodemailer": "^6.10.1",
     "reflect-metadata": "^0.2.2",
     "stripe": "^17.5.0",
     "tsyringe": "^4.10.0",
@@ -34,6 +38,8 @@
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
     "@types/node": "^22.16.5",
+    "@types/node-cron": "^3.0.11",
+    "@types/nodemailer": "^6.4.21",
     "nodemon": "^3.1.7",
     "ts-node": "^10.9.2",
     "tsx": "^4.19.2",
